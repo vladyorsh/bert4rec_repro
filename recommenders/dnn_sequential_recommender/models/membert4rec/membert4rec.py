@@ -3,22 +3,19 @@ from tensorflow.keras import Model
 import tensorflow as tf
 
 from aprec.recommenders.dnn_sequential_recommender.models.sequential_recsys_model import SequentialRecsysModel
-from transformers import BertConfig, TFBertForMaskedLM
+from transformers import AlbertConfig, TFAlbertForMaskedLM 
 
-class BERT4Rec(SequentialRecsysModel):
-    def __init__(self, output_layer_activation = 'linear',
-                 embedding_size = 64, max_history_len = 100,
+class MEMBERT4Rec(SequentialRecsysModel):
+    def __init__(self,
+                 hidden_size = 256,
+                 max_history_len = 100,
                  attention_probs_dropout_prob = 0.2,
-                 hidden_act = "gelu",
                  hidden_dropout_prob = 0.2,
-                 initializer_range = 0.02,
-                 intermediate_size = 128,
-                 num_attention_heads = 2,
-                 num_hidden_layers = 3,
-                 type_vocab_size = 2, 
+                 num_attention_heads = 16,
+                 num_hidden_layers = 3, 
                 ):
         super().__init__(output_layer_activation, embedding_size, max_history_len)
-        self.embedding_size = embedding_size
+        self.hidden_size = hidden_size
         self.max_history_length = max_history_len
         self.attention_probs_dropout_prob = attention_probs_dropout_prob
         self.hidden_act = hidden_act
@@ -28,12 +25,14 @@ class BERT4Rec(SequentialRecsysModel):
         self.num_attention_heads = num_attention_heads 
         self.num_hidden_layers = num_hidden_layers 
         self.type_vocab_size = type_vocab_size      
+        self.hidden_size=hidden_size
 
 
     def get_model(self):
-        bert_config = BertConfig(
+        bert_config = AlbertConfig(
             vocab_size = self.num_items + 2, # +1 for mask item, +1 for padding
-            hidden_size = self.embedding_size,
+            embedding = self.embedding_size,
+            hidden_size=self.hidden_size,
             intermediate_size = self.intermediate_size,
             max_position_embeddings=2*self.max_history_length, 
             attention_probs_dropout_prob=self.attention_probs_dropout_prob, 
@@ -44,10 +43,10 @@ class BERT4Rec(SequentialRecsysModel):
             num_hidden_layers=self.num_hidden_layers, 
             type_vocab_size=self.type_vocab_size, 
         )
-        return BERT4RecModel(self.batch_size, self.output_layer_activation, bert_config, self.max_history_length)
+        return ALBERT4RecModel(self.batch_size, self.output_layer_activation, bert_config, self.max_history_length)
 
 
-class BERT4RecModel(Model):
+class ALBERT4RecModel(Model):
     def __init__(self, batch_size, outputput_layer_activation, bert_config, sequence_length, 
                         *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -55,7 +54,7 @@ class BERT4RecModel(Model):
         self.output_layer_activation = outputput_layer_activation
         self.token_type_ids = tf.constant(tf.zeros(shape=(batch_size, bert_config.max_position_embeddings)))
         self.position_ids_for_pred = tf.constant(np.array(list(range(1, sequence_length +1))).reshape(1, sequence_length))
-        self.bert =  TFBertForMaskedLM(bert_config)
+        self.bert =  TFAlbertForMaskedLM(bert_config)
 
     def call(self, inputs, **kwargs):
         sequences = inputs[0]

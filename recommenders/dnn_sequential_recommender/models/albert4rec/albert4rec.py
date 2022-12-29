@@ -6,7 +6,7 @@ from aprec.recommenders.dnn_sequential_recommender.models.sequential_recsys_mode
 from transformers import AlbertConfig, TFAlbertForMaskedLM 
 class ALBERT4Rec(SequentialRecsysModel):
     def __init__(self, output_layer_activation = 'linear',
-                 hidden_size = 256,
+                 hidden_size = None,
                  embedding_size = 64, max_history_len = 100,
                  attention_probs_dropout_prob = 0.2,
                  hidden_act = "gelu",
@@ -28,7 +28,7 @@ class ALBERT4Rec(SequentialRecsysModel):
         self.num_attention_heads = num_attention_heads 
         self.num_hidden_layers = num_hidden_layers 
         self.type_vocab_size = type_vocab_size      
-        self.hidden_size=hidden_size
+        self.hidden_size=hidden_size if hidden_size is not None else embedding_size
 
 
     def get_model(self):
@@ -36,7 +36,7 @@ class ALBERT4Rec(SequentialRecsysModel):
             vocab_size = self.num_items + 2, # +1 for mask item, +1 for padding
             embedding = self.embedding_size,
             hidden_size=self.hidden_size,
-            intermediate_size = self.hidden_size * 4,
+            intermediate_size = self.intermediate_size,
             max_position_embeddings=2*self.max_history_length, 
             attention_probs_dropout_prob=self.attention_probs_dropout_prob, 
             hidden_act=self.hidden_act, 
