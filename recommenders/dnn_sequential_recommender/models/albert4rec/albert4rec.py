@@ -35,7 +35,8 @@ class ALBERT4Rec(SequentialRecsysModel):
         bert_config = AlbertConfig(
             vocab_size = self.num_items + 2, # +1 for mask item, +1 for padding
             embedding = self.embedding_size,
-            hidden_size=self.hidden_size, 
+            hidden_size=self.hidden_size,
+            intermediate_size = self.hidden_size * 4,
             max_position_embeddings=2*self.max_history_length, 
             attention_probs_dropout_prob=self.attention_probs_dropout_prob, 
             hidden_act=self.hidden_act, 

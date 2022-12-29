@@ -34,6 +34,7 @@ class BERT4Rec(SequentialRecsysModel):
         bert_config = BertConfig(
             vocab_size = self.num_items + 2, # +1 for mask item, +1 for padding
             hidden_size = self.embedding_size,
+            intermediate_size = self.embedding_size * 4,
             max_position_embeddings=2*self.max_history_length, 
             attention_probs_dropout_prob=self.attention_probs_dropout_prob, 
             hidden_act=self.hidden_act, 
