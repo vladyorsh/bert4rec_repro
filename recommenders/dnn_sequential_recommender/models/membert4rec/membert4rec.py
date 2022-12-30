@@ -4,7 +4,7 @@ import tensorflow as tf
 
 from aprec.recommenders.dnn_sequential_recommender.models.sequential_recsys_model import SequentialRecsysModel
 from .membert import TModel as MEMBERT
-from .membert import BERTLoss
+from .membert import TLoss
 
 class MEMBERT4Rec(SequentialRecsysModel):
     def __init__(self,
@@ -32,7 +32,6 @@ class MEMBERT4RecModel(Model):
                         *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.bert = MEMBERT(vocab_size, seq_len, hidden_dim, num_heads, dropout_rate, num_blocks, shared_embs)
-        self.loss = BERTLoss()
 
     def call(self, inputs, **kwargs):
         sequences = inputs[0]
@@ -40,7 +39,7 @@ class MEMBERT4RecModel(Model):
         positions = inputs[2]
         
         out  = self.bert(sequences)
-        loss = self.loss(labels, out)
+        loss = TLoss(true=labels, pred=out)
         
         return loss
 

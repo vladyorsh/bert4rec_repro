@@ -141,19 +141,15 @@ class TOutput(keras.layers.Layer):
       x = self.final(x)
     return x
     
-class BERTLoss(keras.layers.Layer):
-  def __init__(self):
-    super().__init__()
-    self.loss = tf.keras.losses.SparseCategoricalCrossentropy(
+def TLoss(true, pred):
+  unmasked = tf.keras.losses.SparseCategoricalCrossentropy(
             from_logits=True, reduction=tf.keras.losses.Reduction.NONE
-        )
-  def __call__(self, true, pred):
-    unmasked = self.loss(y_true=tf.nn.relu(true), y_pred=pred)
-    mask = tf.cast(true >= 0, dtype=unmasked.dtype)
-    masked   = unmasked * mask
-    reduced  = tf.reduce_sum(masked) / tf.reduce_sum(mask)
+        )(y_true=tf.nn.relu(true), y_pred=pred)
+  mask = tf.cast(true >= 0, dtype=unmasked.dtype)
+  masked   = unmasked * mask
+  reduced  = tf.reduce_sum(masked) / tf.reduce_sum(mask)
 
-    return reduced
+  return reduced
 
 class TModel(keras.Model):
   def __init__(self, vocab_size, seq_len, hidden_dim, num_heads, dropout_rate, num_blocks, shared_embs=False):
