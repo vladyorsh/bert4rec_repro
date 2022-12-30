@@ -39,7 +39,7 @@ def membert4rec(sequence_len=50, hidden_dim=256, num_layers=2, attention_heads=1
                                                training_time_limit=3600000, 
                                                loss = MeanPredLoss(),
                                                debug=False, sequence_splitter=lambda: ItemsMasking(masking_prob=masking_prob, recency_importance=rss), 
-                                               targets_builder= lambda: ItemsMaskingTargetsBuilder(relative_positions_encoding=relative_position_encoding),
+                                               targets_builder= lambda: ItemsMaskingTargetsBuilder(relative_positions_encoding=False), #TODO: Check this for relative position encoding/timestamps
                                                val_sequence_splitter=lambda: ItemsMasking(force_last=True),
                                                metric=MeanPredLoss(), 
                                                pred_history_vectorizer=AddMaskHistoryVectorizer(),
