@@ -149,7 +149,7 @@ class BERTLoss(keras.layers.Layer):
         )
   def __call__(self, true, pred):
     unmasked = self.loss(y_true=tf.nn.relu(true), y_pred=pred)
-    mask = tf.cast(true != -100, dtype=unmasked.dtype)
+    mask = tf.cast(true >= 0, dtype=unmasked.dtype)
     masked   = unmasked * mask
     reduced  = tf.reduce_sum(masked) / tf.reduce_sum(mask)
 
