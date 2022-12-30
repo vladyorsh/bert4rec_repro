@@ -3,8 +3,8 @@ from tensorflow.keras import Model
 import tensorflow as tf
 
 from aprec.recommenders.dnn_sequential_recommender.models.sequential_recsys_model import SequentialRecsysModel
-from membert import TModel as MEMBERT
-from membert import BERTLoss
+from .membert import TModel as MEMBERT
+from .membert import BERTLoss
 
 class MEMBERT4Rec(SequentialRecsysModel):
     def __init__(self,
