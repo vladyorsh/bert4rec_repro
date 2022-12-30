@@ -10,7 +10,7 @@ class MEMBERT4Rec(SequentialRecsysModel):
     def __init__(self,
                  hidden_size = 256,
                  max_history_len = 100,
-                 dropout_prob=0.2
+                 dropout_prob=0.2,
                  num_attention_heads = 16,
                  num_hidden_layers = 3,
                  shared_embs = False
